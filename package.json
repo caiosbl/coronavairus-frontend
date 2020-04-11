@@ -1,0 +1,58 @@
+{
+  "name": "coronatracker",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@emotion/core": "^10.0.28",
+    "@material-ui/core": "^4.9.7",
+    "@material-ui/icons": "^4.9.1",
+    "@progress/kendo-gauges-react-wrapper": "^2019.4.1014",
+    "@progress/kendo-react-gauges": "^3.12.0",
+    "@testing-library/jest-dom": "^4.2.4",
+    "@testing-library/react": "^9.5.0",
+    "@testing-library/user-event": "^7.2.1",
+    "apexcharts": "^3.18.0",
+    "axios": "^0.19.2",
+    "highcharts": "^8.0.4",
+    "highcharts-react-official": "^3.0.0",
+    "i": "^0.3.6",
+    "loadash": "^1.0.0",
+    "lodash": "^4.17.15",
+    "moment": "^2.24.0",
+    "moment-timezone": "^0.5.28",
+    "npm": "^6.14.4",
+    "react": "^16.13.0",
+    "react-apexcharts": "^1.3.7",
+    "react-css-marquee": "^0.0.4",
+    "react-dash": "^0.7.2",
+    "react-dom": "^16.13.0",
+    "react-double-marquee": "^1.0.1",
+    "react-icons": "^3.9.0",
+    "react-loading-skeleton": "^2.0.1",
+    "react-moment": "^0.9.7",
+    "react-scripts": "3.4.0",
+    "react-spinners": "^0.8.1",
+    "styled-components": "^5.0.1"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "eject": "react-scripts eject"
+  },
+  "eslintConfig": {
+    "extends": "react-app"
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  }
+}

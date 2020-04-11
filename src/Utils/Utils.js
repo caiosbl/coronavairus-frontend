@@ -1,0 +1,1 @@
+export const toNumber = (number) => Number(number.replace(",", ""));
