@@ -116,8 +116,8 @@ class WorldMap extends React.Component {
                         borderWidth: 5
                     }
                 },
-                keys: ['name', 'value'],
-                joinBy: "name",
+                keys: ['iso-a2', 'value', 'name'],
+                joinBy: "iso-a2",
                 name: this.mapDetails()[this.props.type]["details"],
 
                 dataLabels: {

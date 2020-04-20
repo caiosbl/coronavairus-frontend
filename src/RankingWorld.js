@@ -29,9 +29,9 @@ class RankingWorld extends React.Component {
 
     getType = () => {
         return {
-            0: "cases",
-            1: "deaths",
-            2: "total_recovered"
+            0: "TotalConfirmed",
+            1: "TotalDeaths",
+            2: "TotalRecovered"
         }
     }
 
@@ -83,36 +83,47 @@ class RankingWorld extends React.Component {
 
 
                 {!loading && <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
-                    {data.filter(l => l.country_name.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]].replace(",", "")) - Number(a[this.getType()[type]].replace(",", ""))).map((d, i) =>
-
-
+                    {data.filter(l => l.Country.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]]) - Number(a[this.getType()[type]])).map((d, i) =>
                     { 
-                        const deaths = Number(d?.deaths?.replace(",",""));
-                        const cases = Number(d.cases.replace(",",""));
-                        const deltaMortalRate = ((deaths / cases) * 100).toFixed(2);
+
+        
+                        const deaths = d.TotalDeaths ;
+                        const cases = d.TotalConfirmed ;
+                        const newCases = d.NewConfirmed;
+                        const newDeaths = d.NewDeaths;
+                        const mortalRate = cases > 0 ?  ((deaths / cases) * 100).toFixed(2) : 0;
+
+                        const deltaMortalRate =  newCases ? ((newDeaths / newCases) -  (deaths / cases) ) * 100 : (newDeaths / cases) * 100;
 
 
                         return (<div key={i} style={{
-                            display: "flex", flexDirection: "column", alignItems: "center", width: "99%", height: 130, justifyContent: "center",                            borderBottom: 'solid 1px red', borderTop: 'solid 1px red', marginBottom: 10
+                            display: "flex", flexDirection: "column", alignItems: "center", width: "99%", height: 130,
+                            borderBottom: 'solid 1px red', borderTop: 'solid 1px red', marginBottom: 10
                         }}>
 
-                            <div style={{ fontSize: 20, marginBottom: 5, marginTop: 5 }}><b>{d.country_name}</b></div>
+                            <div style={{ fontSize: 20, marginBottom: 5, marginTop: 5 }}><b>{d.Country}</b></div>
 
                             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
+                           
                             <div style={styles.values}>
+                            <div style={{...styles.newValues, color: newCases > 0 ? 'red' : 'black'}}>{newCases > 0 ? "+" + newCases : "-"}</div>
                                     <div style={styles.value}><b>{cases.toLocaleString()}</b></div>
                                     <div><b>Casos</b></div>
                                 </div>
 
                                 <div style={styles.values}>
+                                <div style={{...styles.newValues, color: newDeaths > 0 ? 'red' : 'black'}}>{newDeaths > 0 ? "+" + newDeaths : "-"}</div>
                                     <div style={styles.value}><b>{deaths.toLocaleString()}</b></div>
                                     <div><b>Mortes</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                    <div style={styles.value}><b>{deltaMortalRate}%</b></div>
+                                <div style={{...styles.newValues, color: deltaMortalRate.toFixed(2) > 0.00 ? 'red' : deltaMortalRate.toFixed(2) < 0.00 ? 'green' : 'black'}}>
+                                    {Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
+                                    <div style={styles.value}><b>{mortalRate}%</b></div>
                                     <div><b>Mortalidade</b></div>
                                 </div>
+
                             </div>
 
                            

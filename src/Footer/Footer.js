@@ -41,9 +41,7 @@ class Footer extends React.Component {
               Desenvolvido por <a href="https://github.com/caiosbl" style={{ color: "red" }}>Caio Sanches</a> ©
           </div>
 
-            <div style={{ marginBottom: 20 }}>
-              Conheça a nossa <b><a href="/politica.html" target="_blank" style={{ color: "red" }}>Política de Privacidade</a></b>
-            </div>
+           
 
           </div>
 

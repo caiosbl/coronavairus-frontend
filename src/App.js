@@ -9,12 +9,12 @@ import News from './News';
 import Footer from './Footer/Footer';
 import Header from './Header/Header';
 
+
 import { countriesEnglish } from './english';
 import { countriesPortuguese } from './portuguese';
-import { WorldApi,  TimelineApi, CoronavairusApi } from './Services/Api';
+import { WorldApi, TimelineApi, CoronavairusApi } from './Services/Api';
 import { toNumber } from './Utils/Utils';
-import Skeleton from 'react-loading-skeleton';
-import { estados } from './Utils/Estados';
+import { time } from 'highcharts';
 
 
 class App extends React.Component {
@@ -23,10 +23,12 @@ class App extends React.Component {
     super(props);
     this.state = {
       lastData: new Date(),
-      timeline: { dates: [], cases: [], casesByDay: [], deathsByDay: [] },
+      timeline: { dates: [], cases: [], casesByDay: [], deathsByDay: [], prediction: [], predictionDeaths: [] },
       latest: null,
       brazil: { map: { cases: [], deaths: [], suspects: [], mortalRate: [] }, ranking: { data: [] } },
+      brazilStatus: null,
       world: { cases: [], deaths: [], recovered: [], translated: [] },
+      global: null,
       news: [],
       currentWidth: 1024
     }
@@ -48,65 +50,93 @@ class App extends React.Component {
     }
   }
 
+  regression = (dates, data, cases) => {
+
+
+
+    const addDays = (date, days) => {
+
+      var result = new Date(Date(date));
+      result.setDate(result.getDate() + days);
+      return `${result.getDate()}/${result.getMonth() + 1}`;
+    }
+
+
+    const lastDay = dates.slice(-1)[0];
+    const lastCasesSum = cases.slice(-1)[0];
+    let newDates = [];
+    let newData = [];
+
+    for (let day = 1; day <= 3; day++) {
+      newDates.push(addDays(lastDay, day));
+    }
+
+    let m = 1.18122808;
+    let x = data.slice(-1)[0]['newCases'];
+    let b = 21.296972287647748;
+
+
+
+
+    for (let day = 1; day <= 3; day++) {
+      if(day == 1) m += 0.3;
+      const y = (m * x) + b;
+      newData.push(y);
+      x = y;
+      m += 0.12;
+    
+
+    }
+
+    const predictData = newData.map(v => v + lastCasesSum);
+
+
+    return predictData.map((v, i) => { return { x: newDates[i], y: Number(v.toFixed(0)) } })
+
+  }
+
   getData = () => {
 
-    TimelineApi.get("").then(res => {
-      const timeline = res.data["Brazil"];
-
-      const dates = timeline.slice(35, timeline.length).map(d => `${d.date.split("-")[2]}/${d.date.split("-")[1]}`);
-      const cases = timeline.slice(35, timeline.length).map(d => d.confirmed);
-      const deaths = timeline.slice(35, timeline.length).map(d => d.deaths);
-
-      let casesByDay = [];
-      let deathsByDay = [];
-
-      cases.forEach((c, i) => {
-        if (i === 0) casesByDay.push(c);
-        else casesByDay.push(c - cases[i - 1]);
-      });
-
-      deaths.forEach((c, i) => {
-        if (i === 0) deathsByDay.push(c);
-        else deathsByDay.push(c - deaths[i - 1]);
-      });
-
-      this.setState({ timeline: { dates: dates, cases: cases, deaths: deaths, casesByDay: casesByDay, deathsByDay: deathsByDay } });
 
 
+    WorldApi.get("").then(res => {
 
-    }).catch(e => console.log(e));
-
-
-
-    WorldApi.get(`/cases_by_country.php`).then(res => {
+      const data = res.data['Countries'];
 
       let translated = [];
 
-      if (res.data["countries_stat"].length > 0) {
+      data.forEach(country => {
 
-        res.data["countries_stat"].forEach(country => {
-          if (!["North America", "Europe", "Asia", "South America", "Oceania", "Africa", ""].includes(country.country_name)) {
-
-            if (countriesEnglish[country.country_name]) {
-              translated.push({ ...country, country_name: countriesPortuguese[countriesEnglish[country.country_name]]["name"] })
-            }
-            else {
-              translated.push(country)
-            }
-          }
-        });
+      const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.CountryCode )
 
 
-        const cases = res.data["countries_stat"].map(state => [state.country_name, toNumber(state.cases)]);
-        const deaths = res.data["countries_stat"].map(state => [state.country_name, toNumber(state.deaths)]);
-        const recovered = res.data["countries_stat"].map(state => [state.country_name, toNumber(state.total_recovered)]);
+        if (translateMap.length > 0 ) {
+          translated.push({ ...country, Country: translateMap[0]["name"] })
+        }
+        else {
+          translated.push(country)
+        }
 
-        this.setState({ world: { cases: cases, deaths: deaths, recovered: recovered, translated: translated } })
+      });
 
 
-      }
+      const cases = data.map(state => [state.CountryCode, state.TotalConfirmed]);
+      const deaths = data.map(state => [state.CountryCode, state.TotalDeaths]);
+      const recovered = data.map(state => [state.CountryCode, state.TotalRecovered]);
+
+
+      const brazilData = data.filter(d => d.Country === "Brazil")[0];
+
+
+
+      this.setState({ brazilStatus: brazilData, global: res.data['Global'], world: { cases: cases, deaths: deaths, recovered: recovered, translated: translated } })
+
+
+
 
     }).catch(e => console.log(e))
+
+
 
 
     CoronavairusApi.get("/state").then(res => {
@@ -115,16 +145,17 @@ class App extends React.Component {
       const cases = data.map(state => [`br-${String(state.uf).toLowerCase()}`, state.latest.cases]);
       const deaths = data.map(state => [`br-${String(state.uf).toLowerCase()}`, state.latest.deaths]);
       const mortalRate = data.map(state => {
-        
-        
-        return [`br-${String(state.uf).toLowerCase()}`, ((state.latest.deaths / state.latest.cases) * 100) ]});
+
+
+        return [`br-${String(state.uf).toLowerCase()}`, ((state.latest.deaths / state.latest.cases) * 100)]
+      });
 
       const suspects = data.map(state => {
         const suspect = state.latest.suspects || 0;
         return [`br-${String(state.uf).toLowerCase()}`, suspect]
       });
 
-      
+
 
       this.setState({
         brazil: {
@@ -142,6 +173,34 @@ class App extends React.Component {
 
     }).catch(e => console.log(e))
 
+    CoronavairusApi.get("/brazil").then(res => {
+
+      let timeline = res.data.content;
+      if (timeline.slice(-2)[0].totalCases === timeline.slice(-1)[0].totalCases) 
+      timeline = timeline.slice(0, timeline.length - 1);
+
+
+      const dates = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}`);
+      const cases = timeline.map(d => d.totalCases);
+      const deaths = timeline.map(d => d.totalDeaths);
+      let casesByDay = timeline.map(d => d.newCases);;
+      let deathsByDay = timeline.map(d => d.newDeaths);;
+
+      const datesFormated = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}/${d.date.split("-")[0]}`);
+
+
+
+      const predictionCases = this.regression(datesFormated, timeline, cases);
+
+
+
+      this.setState({ timeline: { dates: dates, cases: cases, deaths: deaths, casesByDay: casesByDay, deathsByDay: deathsByDay, prediction: predictionCases } });
+
+
+    }).catch(e => console.log(e))
+
+
+
 
   }
 
@@ -149,7 +208,7 @@ class App extends React.Component {
 
   render() {
 
-    const { lastData, timeline, world, brazil, currentWidth } = this.state;
+    const { lastData, timeline, world, brazil, currentWidth, global, brazilStatus } = this.state;
     const tablet = currentWidth <= 1024 && currentWidth >= 764
     const mobile = currentWidth <= 550
 
@@ -158,13 +217,15 @@ class App extends React.Component {
 
     return (<div style={styles.container}>
 
+     
+
       <div style={styles.containerHeader}><Header /></div>
       <div style={styles.containerNews}><News /></div>
 
       <div style={styles.containerContent}>
-
+       
         <div style={{ ...styles.barContainer, order: mobile ? 2 : 1 }}>
-          <Bars countries={world.translated} order={1} />
+          <Bars world={global} brazil={brazilStatus} order={1} />
           {tablet && <div style={{ order: 2 }}>
             <Rankings data={brazil.ranking.data} order={2} />
             <RankingWorld data={world.translated} order={3} />
@@ -174,7 +235,8 @@ class App extends React.Component {
 
         <div style={{ ...styles.containerCharts, order: mobile ? 1 : 2 }}>
           <Map world={world} brazil={brazil} order={1} />
-          <LineChart dates={timeline.dates} cases={timeline.cases} deaths={timeline.deaths} mortalRate={timeline.mortalRate} order={2} />
+          <LineChart dates={timeline.dates} cases={timeline.cases} deaths={timeline.deaths} mortalRate={timeline.mortalRate} prediction={timeline.prediction}
+            predictionDeaths={timeline.predictionDeaths} order={2} />
           <Histogram dates={timeline.dates} casesByDay={timeline.casesByDay} deathsByDay={timeline.deathsByDay} order={3} />
         </div>
 

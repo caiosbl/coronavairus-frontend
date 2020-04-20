@@ -21,7 +21,8 @@ class LineChart extends React.Component {
     super(props);
     this.state = {
       active: 0,
-      actualData: []
+      actualData: [],
+      showData: { 0: true, 1: true, 2: true }
     }
 
   }
@@ -33,7 +34,43 @@ class LineChart extends React.Component {
 
   chartOptions = () => {
 
-    const { active } = this.state;
+    const { active, showData } = this.state;
+
+    const series = []
+
+
+   
+    if (showData[0] && showData[1]) series.push({
+      name: "Previsão de Casos",
+      data: this.props.cases.concat(this.props.prediction.map(v => v.y)),
+      lineColor: "yellow",
+      marker: { fillColor: "yellow" },
+      showInLegend: false,
+      color: "yellow",
+      labelrank: -1,
+      marker: { enabled: false, symbol: "circle" }
+    })
+
+    if (showData[0]) series.push({
+      name: "Casos",
+      data: [...this.props.cases],
+      lineColor: "red",
+      marker: { fillColor: "red" },
+      showInLegend: false,
+      color: "red",
+      labelrank: -1000,
+      marker: { enabled: false, symbol: "circle" }
+
+    })
+
+
+    if (showData[2]) series.push({
+      name: "Mortes",
+      data: [...this.props.deaths], lineColor: "white", marker: { fillColor: "white" }, showInLegend: false,
+      color: "white",
+      marker: { enabled: false, symbol: "circle" }
+    })
+
 
     return ({
       chart: { backgroundColor: "#000000", lineColor: "red", style: { color: "red" }, type: "line" },
@@ -60,7 +97,7 @@ class LineChart extends React.Component {
 
       },
       xAxis: {
-        categories: this.props.dates,
+        categories: this.props.dates.concat(this.props.prediction.map(v => v.x)),
         tickColor: "red",
         lineColor: '#FF0000',
         lineWidth: 1,
@@ -89,20 +126,11 @@ class LineChart extends React.Component {
 
       },
 
-      series: [{
-        name: "Casos",
-        data: [...this.props.cases], lineColor: "red", marker: { fillColor: "red" }, showInLegend: true,
-        color : "red"
-
-      }, {
-        name: "Mortes",
-        data: [...this.props.deaths], lineColor: "white", marker: { fillColor: "white" }, showInLegend: true,
-        color: "white"
-      }],
-
+      series: series
 
 
     })
+
   }
 
 
@@ -118,9 +146,11 @@ class LineChart extends React.Component {
   render() {
 
     const { cases } = this.props;
-    const { active } = this.state;
+    const { active, showData } = this.state;
+    const showCases = showData[0];
+    const showPredict = showData[1];
+    const showDeaths = showData[2];
     const loading = cases.length === 0;
-
 
     return (
 
@@ -139,6 +169,39 @@ class LineChart extends React.Component {
             options={this.chartOptions()}
             containerProps={styles.chartContainer}
           />}
+
+        <div style={{ fontFamily: "Oswald, Sans Serif", fontSize: 13 }}>
+          Clique na legenda para exibir ou ocultar
+          </div>
+
+        <div style={{
+          display: "flex",
+          flexFlow: "row wrap",  justifyContent: "space-around",
+          width: "100%", 
+        }}>
+
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+            justifyContent: "center", width: "25%", height: "70%", minWidth: 150,
+            border: "solid 2px red", color: "red", fontFamily: "Oswald, Sans Serif",
+            userSelect: 'none'
+          }} onClick={() => this.setState({ showData: { ...showData, 0: !showCases } })}>Casos</div>
+
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+            justifyContent: "center", width: "30%", height: "70%",minWidth: 150,
+            border: "solid 2px yellow", color: "yellow", fontFamily: "Oswald, Sans Serif",
+            userSelect: 'none'
+          }} onClick={() => this.setState({ showData: { ...showData, 1: !showPredict } })}>Previsão de Casos</div>
+
+          <div style={{
+            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+            justifyContent: "center", width: "25%", height: "70%",minWidth: 150,
+            border: "solid 2px white", color: "white", fontFamily: "Oswald, Sans Serif",
+            userSelect: 'none'
+          }} onClick={() => this.setState({ showData: { ...showData, 2: !showDeaths} })}>Mortes</div>
+
+        </div>
 
       </div>);
 

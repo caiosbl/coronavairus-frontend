@@ -1,7 +1,7 @@
 import React from 'react';
 import { css } from "@emotion/core";
 import ScaleLoader from "react-spinners/ScaleLoader";
-import { toNumber } from './../Utils/Utils';
+
 
 
 const override = css`
@@ -24,13 +24,13 @@ class Bar extends React.Component {
 
     }
 
-   
+
 
 
     render() {
 
-        const { total, title, brasil, loading, formatter = "" } = this.props;
-    
+        const { total, title, Brazil, loading, formatter = "" } = this.props;
+
         return (
 
             <div style={styles.container}>
@@ -47,13 +47,13 @@ class Bar extends React.Component {
                 {!loading && <div style={styles.insideContainer}>
 
                     <div style={styles.containerBox}>
-                        <div style={styles.location}><b>Brasil</b></div>
-                        <div style={styles.value}>{toNumber(brasil).toLocaleString().replace(",",".") + formatter}</div>
+                        <div style={styles.location}><b>Brazil</b></div>
+                        <div style={styles.value}>{Brazil.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + formatter}</div>
                     </div>
 
                     <div style={styles.containerBox}>
                         <div style={styles.location}><b>Mundo</b></div>
-                        <div style={styles.value}>{total.toLocaleString() + formatter}</div>
+                        <div style={styles.value}>{total.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + formatter}</div>
                     </div>
 
                 </div>}
@@ -95,10 +95,10 @@ const styles = {
         width: "100%",
         borderBottom: "solid 1px red",
         padding: 10,
-        
+
     },
     title: {
-        
+
         color: "red",
         fontSize: 30
     },

@@ -1,12 +1,7 @@
 import Axios from 'axios';
 
 export const WorldApi = Axios.create({
-
-  baseURL: `https://coronavirus-monitor.p.rapidapi.com/coronavirus`,
-  headers: {
-    'X-RapidAPI-Host': "coronavirus-monitor.p.rapidapi.com",
-    "X-RapidAPI-Key": "d3aaa95ab4msh6eed21a9168ae60p129d79jsnbdda41977724"
-  }
+  baseURL: `https://api.covid19api.com/summary`
 });
 
 export const Api = Axios.create({

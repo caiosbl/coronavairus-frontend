@@ -45,7 +45,11 @@ class News extends React.Component {
 
     getData = () => {
 
-        ApiNews.get("news").then(res => {
+        ApiNews.get("news/last", {
+            params: {
+                size: 20
+            }
+        }).then(res => {
             this.setState({ news: res.data.content });
         })
     }

@@ -46,7 +46,7 @@ export const countriesPortuguese = {
     178: { "name": "República do Congo", "alpha2": "cg", "alpha3": "cog" },
     180: { "name": "República Democrática do Congo", "alpha2": "cd", "alpha3": "cod" },
     410: { "name": "Coreia do Sul", "alpha2": "kr", "alpha3": "kor" },
-    408: { "name": "Coreia do Sul", "alpha2": "kp", "alpha3": "prk" },
+    408: { "name": "Coreia do Norte", "alpha2": "kp", "alpha3": "prk" },
     384: { "name": "Costa do Marfim", "alpha2": "ci", "alpha3": "civ" },
     188: { "name": "Costa Rica", "alpha2": "cr", "alpha3": "cri" },
     191: { "name": "Croácia", "alpha2": "hr", "alpha3": "hrv" },

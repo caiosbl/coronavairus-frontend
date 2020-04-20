@@ -114,7 +114,7 @@ class Ranking extends React.Component {
                                 </div>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: deltaMortalRate > 0 ? 'red' : deltaMortalRate < 0 ? 'green' : 'black'}}>{deltaMortalRate !== 0 ? (deltaMortalRate > 0 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
+                                    <div style={{...styles.newValues, color: Number(deltaMortalRate.toFixed(2)) > 0.00 ? 'red' : Number(deltaMortalRate.toFixed(2)) < 0.00 ? 'green' : 'black'}}>{Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
                                     <div style={styles.value}><b>{mortalRate.toFixed(2)}%</b></div>
                                     <div><b>Mortalidade</b></div>
                                 </div>
