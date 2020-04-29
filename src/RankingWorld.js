@@ -67,8 +67,6 @@ class RankingWorld extends React.Component {
                     display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
                     fontSize: 20, backgroundColor: "red", width: "100%", marginBottom: 10
                 }}><b>Mundo</b></div>}
-                
-
 
 
                 {!loading && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 10, marginBottom: 10 }}>
@@ -83,17 +81,16 @@ class RankingWorld extends React.Component {
 
 
                 {!loading && <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
-                    {data.filter(l => l.Country.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]]) - Number(a[this.getType()[type]])).map((d, i) =>
-                    { 
+                    {data.filter(l => l.Country.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]]) - Number(a[this.getType()[type]])).map((d, i) => {
 
-        
-                        const deaths = d.TotalDeaths ;
-                        const cases = d.TotalConfirmed ;
+
+                        const deaths = d.TotalDeaths;
+                        const cases = d.TotalConfirmed;
                         const newCases = d.NewConfirmed;
                         const newDeaths = d.NewDeaths;
-                        const mortalRate = cases > 0 ?  ((deaths / cases) * 100).toFixed(2) : 0;
-
-                        const deltaMortalRate =  newCases ? ((newDeaths / newCases) -  (deaths / cases) ) * 100 : (newDeaths / cases) * 100;
+                        const mortalRate = cases > 0 ? ((deaths / cases) * 100).toFixed(2) : 0;
+                        const mortalRateYesterday = ((deaths - newDeaths) / (cases - newCases)) * 100;
+                        const deltaMortalRate = mortalRate - mortalRateYesterday;
 
 
                         return (<div key={i} style={{
@@ -104,31 +101,32 @@ class RankingWorld extends React.Component {
                             <div style={{ fontSize: 20, marginBottom: 5, marginTop: 5 }}><b>{d.Country}</b></div>
 
                             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
-                           
-                            <div style={styles.values}>
-                            <div style={{...styles.newValues, color: newCases > 0 ? 'red' : 'black'}}>{newCases > 0 ? "+" + newCases : "-"}</div>
+
+                                <div style={styles.values}>
+                                    <div style={{ ...styles.newValues, color: newCases > 0 ? 'red' : 'black' }}>{newCases > 0 ? "+" + newCases.toLocaleString() : "-"}</div>
                                     <div style={styles.value}><b>{cases.toLocaleString()}</b></div>
                                     <div><b>Casos</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                <div style={{...styles.newValues, color: newDeaths > 0 ? 'red' : 'black'}}>{newDeaths > 0 ? "+" + newDeaths : "-"}</div>
+                                    <div style={{ ...styles.newValues, color: newDeaths > 0 ? 'red' : 'black' }}>{newDeaths > 0 ? "+" + newDeaths.toLocaleString() : "-"}</div>
                                     <div style={styles.value}><b>{deaths.toLocaleString()}</b></div>
                                     <div><b>Mortes</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                <div style={{...styles.newValues, color: deltaMortalRate.toFixed(2) > 0.00 ? 'red' : deltaMortalRate.toFixed(2) < 0.00 ? 'green' : 'black'}}>
-                                    {Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
+                                    <div style={{ ...styles.newValues, color: deltaMortalRate.toFixed(2) > 0.00 ? 'red' : deltaMortalRate.toFixed(2) < 0.00 ? 'green' : 'black' }}>
+                                        {Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
                                     <div style={styles.value}><b>{mortalRate}%</b></div>
                                     <div><b>Mortalidade</b></div>
                                 </div>
 
                             </div>
 
-                           
 
-                        </div>);}
+
+                        </div>);
+                    }
                     )}
                 </div>}
 

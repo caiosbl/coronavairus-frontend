@@ -50,53 +50,9 @@ class App extends React.Component {
     }
   }
 
-  regression = (dates, data, cases) => {
 
-
-
-    const addDays = (date, days) => {
-
-      var result = new Date(Date(date));
-      result.setDate(result.getDate() + days);
-      return `${result.getDate()}/${result.getMonth() + 1}`;
-    }
-
-
-    const lastDay = dates.slice(-1)[0];
-    const lastCasesSum = cases.slice(-1)[0];
-    let newDates = [];
-    let newData = [];
-
-    for (let day = 1; day <= 3; day++) {
-      newDates.push(addDays(lastDay, day));
-    }
-
-    let m = 1.18122808;
-    let x = data.slice(-1)[0]['newCases'];
-    let b = 21.296972287647748;
-
-
-
-
-    for (let day = 1; day <= 3; day++) {
-      if(day == 1) m += 0.3;
-      const y = (m * x) + b;
-      newData.push(y);
-      x = y;
-      m += 0.12;
-    
-
-    }
-
-    const predictData = newData.map(v => v + lastCasesSum);
-
-
-    return predictData.map((v, i) => { return { x: newDates[i], y: Number(v.toFixed(0)) } })
-
-  }
 
   getData = () => {
-
 
 
     WorldApi.get("").then(res => {
@@ -107,10 +63,10 @@ class App extends React.Component {
 
       data.forEach(country => {
 
-      const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.CountryCode )
+        const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.CountryCode)
 
 
-        if (translateMap.length > 0 ) {
+        if (translateMap.length > 0) {
           translated.push({ ...country, Country: translateMap[0]["name"] })
         }
         else {
@@ -125,17 +81,49 @@ class App extends React.Component {
       const recovered = data.map(state => [state.CountryCode, state.TotalRecovered]);
 
 
-      const brazilData = data.filter(d => d.Country === "Brazil")[0];
 
-
-
-      this.setState({ brazilStatus: brazilData, global: res.data['Global'], world: { cases: cases, deaths: deaths, recovered: recovered, translated: translated } })
+      this.setState({ world: { cases: cases, deaths: deaths, recovered: recovered, translated: translated } })
 
 
 
 
     }).catch(e => console.log(e))
 
+    CoronavairusApi.get("/prediction/last").then(res => {
+
+      const formatDate = (date) => {
+        return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}`
+      }
+
+      const data = res.data.content;
+      const prediction = data.map(prediction => {return {x: formatDate(prediction.date), y: prediction.cases.casesHighPrediction}});
+      const predictionDeaths = data.map(prediction => {return {x: formatDate(prediction.date), y: prediction.deaths.deathsHighPrediction}});
+
+
+ 
+
+      this.setState({ timeline: {...this.state.timeline, prediction: prediction, predictionDeaths:  predictionDeaths} });
+
+
+    }).catch(e => console.log(e))
+
+
+    CoronavairusApi.get("/brazil/last").then(res => {
+
+      let data = res.data.content;
+
+      this.setState({ brazilStatus: data });
+
+
+    }).catch(e => console.log(e))
+
+    CoronavairusApi.get("/world/last").then(res => {
+
+      let data = res.data.content;
+      this.setState({ global: data });
+
+
+    }).catch(e => console.log(e))
 
 
 
@@ -176,8 +164,8 @@ class App extends React.Component {
     CoronavairusApi.get("/brazil").then(res => {
 
       let timeline = res.data.content;
-      if (timeline.slice(-2)[0].totalCases === timeline.slice(-1)[0].totalCases) 
-      timeline = timeline.slice(0, timeline.length - 1);
+      if (timeline.slice(-2)[0].totalCases === timeline.slice(-1)[0].totalCases)
+        timeline = timeline.slice(0, timeline.length - 1);
 
 
       const dates = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}`);
@@ -186,15 +174,10 @@ class App extends React.Component {
       let casesByDay = timeline.map(d => d.newCases);;
       let deathsByDay = timeline.map(d => d.newDeaths);;
 
-      const datesFormated = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}/${d.date.split("-")[0]}`);
 
 
 
-      const predictionCases = this.regression(datesFormated, timeline, cases);
-
-
-
-      this.setState({ timeline: { dates: dates, cases: cases, deaths: deaths, casesByDay: casesByDay, deathsByDay: deathsByDay, prediction: predictionCases } });
+      this.setState({ timeline: {...this.state.timeline, dates: dates, cases: cases, deaths: deaths, casesByDay: casesByDay, deathsByDay: deathsByDay,  } });
 
 
     }).catch(e => console.log(e))
@@ -217,13 +200,13 @@ class App extends React.Component {
 
     return (<div style={styles.container}>
 
-     
+
 
       <div style={styles.containerHeader}><Header /></div>
       <div style={styles.containerNews}><News /></div>
 
       <div style={styles.containerContent}>
-       
+
         <div style={{ ...styles.barContainer, order: mobile ? 2 : 1 }}>
           <Bars world={global} brazil={brazilStatus} order={1} />
           {tablet && <div style={{ order: 2 }}>

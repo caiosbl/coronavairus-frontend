@@ -22,7 +22,7 @@ class LineChart extends React.Component {
     this.state = {
       active: 0,
       actualData: [],
-      showData: { 0: true, 1: true, 2: true }
+      showData: { 0: true, 1: true, 2: true, 3: true }
     }
 
   }
@@ -35,18 +35,48 @@ class LineChart extends React.Component {
   chartOptions = () => {
 
     const { active, showData } = this.state;
+    const { prediction, predictionDeaths, cases, deaths } = this.props;
+    let lastCase = cases?.slice(-1)[0];
+    let lastDeath = deaths?.slice(-1)[0];
+
+
 
     const series = []
 
 
-   
+
     if (showData[0] && showData[1]) series.push({
       name: "Previsão de Casos",
-      data: this.props.cases.concat(this.props.prediction.map(v => v.y)),
+      data: this.props.cases.concat([...prediction.map(v => {
+
+        const predict = lastCase + v.y;
+        lastCase = predict;
+        return predict;
+
+
+      })]),
       lineColor: "yellow",
       marker: { fillColor: "yellow" },
       showInLegend: false,
       color: "yellow",
+      labelrank: -1,
+      marker: { enabled: false, symbol: "circle" }
+    })
+
+    if (showData[2] && showData[3]) series.push({
+      name: "Previsão de Mortes",
+      data: this.props.deaths.concat([...predictionDeaths.map(v => {
+
+        const predict = lastDeath + v.y;
+        lastDeath = predict;
+        return predict;
+
+
+      })]),
+      lineColor: "#f826d6",
+      marker: { fillColor: "#f826d6" },
+      showInLegend: false,
+      color: "#f826d6",
       labelrank: -1,
       marker: { enabled: false, symbol: "circle" }
     })
@@ -97,7 +127,7 @@ class LineChart extends React.Component {
 
       },
       xAxis: {
-        categories: this.props.dates.concat(this.props.prediction.map(v => v.x)),
+        categories: this.props.dates.concat(prediction.map(v => v.x)),
         tickColor: "red",
         lineColor: '#FF0000',
         lineWidth: 1,
@@ -145,12 +175,15 @@ class LineChart extends React.Component {
 
   render() {
 
-    const { cases } = this.props;
+    const { cases, prediction, predictionDeaths } = this.props;
     const { active, showData } = this.state;
     const showCases = showData[0];
     const showPredict = showData[1];
     const showDeaths = showData[2];
+    const showPredictDeath = showData[3];
     const loading = cases.length === 0;
+
+
 
     return (
 
@@ -170,36 +203,72 @@ class LineChart extends React.Component {
             containerProps={styles.chartContainer}
           />}
 
-        <div style={{ fontFamily: "Oswald, Sans Serif", fontSize: 13 }}>
+        {!loading && <div style={{ fontFamily: "Oswald, Sans Serif", fontSize: 13 }}>
           Clique na legenda para exibir ou ocultar
-          </div>
-
+          </div>}
         <div style={{
           display: "flex",
-          flexFlow: "row wrap",  justifyContent: "space-around",
-          width: "100%", 
+          flexFlow: "row wrap",
+          justifyContent: 'center',
+          width: "100%",
         }}>
 
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
-            justifyContent: "center", width: "25%", height: "70%", minWidth: 150,
-            border: "solid 2px red", color: "red", fontFamily: "Oswald, Sans Serif",
-            userSelect: 'none'
-          }} onClick={() => this.setState({ showData: { ...showData, 0: !showCases } })}>Casos</div>
+          {!loading && <div style={{
+            display: "flex",
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: "40%",
+            minWidth: 200
+          }}>
 
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
-            justifyContent: "center", width: "30%", height: "70%",minWidth: 150,
-            border: "solid 2px yellow", color: "yellow", fontFamily: "Oswald, Sans Serif",
-            userSelect: 'none'
-          }} onClick={() => this.setState({ showData: { ...showData, 1: !showPredict } })}>Previsão de Casos</div>
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+              justifyContent: "center", width: "10%", height: "70%", minWidth: 150,
+              border: "solid 2px red", color: "red", fontFamily: "Oswald, Sans Serif",
+              userSelect: 'none'
+            }} onClick={() => this.setState({ showData: { ...showData, 0: !showCases } })}>Casos</div>
 
-          <div style={{
-            display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
-            justifyContent: "center", width: "25%", height: "70%",minWidth: 150,
-            border: "solid 2px white", color: "white", fontFamily: "Oswald, Sans Serif",
-            userSelect: 'none'
-          }} onClick={() => this.setState({ showData: { ...showData, 2: !showDeaths} })}>Mortes</div>
+
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+              justifyContent: "center", width: "10%", height: "70%", minWidth: 150,
+              border: "solid 2px white", color: "white", fontFamily: "Oswald, Sans Serif",
+              userSelect: 'none'
+            }} onClick={() => this.setState({ showData: { ...showData, 2: !showDeaths } })}>Mortes</div>
+
+
+
+          </div>}
+
+
+
+          {!loading && <div style={{
+            display: "flex",
+            flexDirection: 'column',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: "40%",
+            minWidth: 200
+          }}>
+
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+              justifyContent: "center", width: "10%", height: "70%", minWidth: 150,
+              border: "solid 2px yellow", color: "yellow", fontFamily: "Oswald, Sans Serif",
+              userSelect: 'none'
+            }} onClick={() => this.setState({ showData: { ...showData, 1: !showPredict } })}>Previsão de Casos</div>
+
+            <div style={{
+              display: "flex", flexDirection: "column", alignItems: "center", margin: 5,
+              justifyContent: "center", width: "10%", height: "70%", minWidth: 150,
+              border: "solid 2px #f826d6", color: "#f826d6", fontFamily: "Oswald, Sans Serif",
+              userSelect: 'none'
+            }} onClick={() => this.setState({ showData: { ...showData, 3: !showPredictDeath } })}>Previsão de Mortes</div>
+
+
+
+          </div>}
 
         </div>
 

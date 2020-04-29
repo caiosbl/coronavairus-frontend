@@ -102,14 +102,14 @@ class Ranking extends React.Component {
                             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: newCases > 0 ? 'red' : 'black'}}>{newCases > 0 ? "+" + newCases : "-"}</div>
-                                    <div style={styles.value}><b>{cases}</b></div>
+                                    <div style={{...styles.newValues, color: newCases > 0 ? 'red' : 'black'}}>{newCases > 0 ? "+" + newCases.toLocaleString() : "-"}</div>
+                                    <div style={styles.value}><b>{cases.toLocaleString()}</b></div>
                                     <div><b>Casos</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: newDeaths > 0 ? 'red' : 'black'}}>{newDeaths > 0 ? "+" + newDeaths : "-"}</div>
-                                    <div style={styles.value}><b>{deaths}</b></div>
+                                    <div style={{...styles.newValues, color: newDeaths > 0 ? 'red' : 'black'}}>{newDeaths > 0 ? "+" + newDeaths.toLocaleString() : "-"}</div>
+                                    <div style={styles.value}><b>{deaths.toLocaleString()}</b></div>
                                     <div><b>Mortes</b></div>
                                 </div>
 

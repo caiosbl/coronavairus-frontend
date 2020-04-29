@@ -47,7 +47,7 @@ class Bar extends React.Component {
                 {!loading && <div style={styles.insideContainer}>
 
                     <div style={styles.containerBox}>
-                        <div style={styles.location}><b>Brazil</b></div>
+                        <div style={styles.location}><b>Brasil</b></div>
                         <div style={styles.value}>{Brazil.toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 }) + formatter}</div>
                     </div>
 
