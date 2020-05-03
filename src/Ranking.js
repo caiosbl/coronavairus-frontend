@@ -2,6 +2,7 @@ import React from 'react';
 import { css } from "@emotion/core";
 import GridLoader from "react-spinners/GridLoader";
 import BarNavigator from './BarNavigator';
+import Card from './Components/Card';
 
 
 const override = css`
@@ -40,16 +41,13 @@ class Ranking extends React.Component {
 
     render() {
 
-        const { data, color, initial, end, } = this.props;
+        const { data, color, initial, end, order } = this.props;
         const { filter, type } = this.state;
         const loading = data.length === 0;
 
         return (
 
-            <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%",
-                height: 600, order: this.props.order, fontFamily: "Oswald, sans-serif", border: "solid 2px red", padding: 10, marginBottom: 20
-            }}>
+            <Card height={600} order={order} title={'Brasil'}>
 
                 {loading && <GridLoader
                     css={override}
@@ -58,20 +56,10 @@ class Ranking extends React.Component {
                     loading={loading}
 
                 />}
-                {!loading && <div style={{
-                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                    fontSize: 20, backgroundColor: "red", width: "100%", marginBottom: 5
-                }}><b>Brasil</b></div>}
 
-                {!loading && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%",
-                 marginTop: 10, marginBottom: 15 }}>
-
-                    <input type="text" value={filter} style={{
-                        width: "100%", height: 20, borderColor: "red", fontSize: 20,
-                        border: "solid 1px red", backgroundColor: "transparent", color: "red", padding: 10,
-                    }}
-                        onChange={(e) => this.setState({ filter: e.target.value })} placeholder={"Buscar por um Estado"} />
-
+             
+                {!loading && <div style={styles.findContainer}>
+                    <input type="text" value={filter} style={styles.findInput} onChange={(e) => this.setState({ filter: e.target.value })} placeholder={"Buscar por um Estado"} />
                 </div>}
 
                 {!loading && <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
@@ -92,29 +80,26 @@ class Ranking extends React.Component {
                         const name = d.name;
 
 
-                        return (<div key={i} style={{
-                            display: "flex", flexDirection: "column", alignItems: "center", width: "99%", height: 130,
-                            borderBottom: 'solid 1px red', borderTop: 'solid 1px red', marginBottom: 10
-                        }}>
+                        return (<div key={i} style={styles.stateContainer}>
 
                             <div style={{ fontSize: 20, marginBottom: 5, marginTop: 5 }}><b>{name}</b></div>
 
                             <div style={{ display: "flex", flexDirection: "row", justifyContent: "space-around", width: "100%" }}>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: newCases > 0 ? 'red' : 'black'}}>{newCases > 0 ? "+" + newCases.toLocaleString() : "-"}</div>
+                                    <div style={{ ...styles.newValues, color: newCases > 0 ? 'red' : 'black' }}>{newCases > 0 ? "+" + newCases.toLocaleString() : "-"}</div>
                                     <div style={styles.value}><b>{cases.toLocaleString()}</b></div>
                                     <div><b>Casos</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: newDeaths > 0 ? 'red' : 'black'}}>{newDeaths > 0 ? "+" + newDeaths.toLocaleString() : "-"}</div>
+                                    <div style={{ ...styles.newValues, color: newDeaths > 0 ? 'red' : 'black' }}>{newDeaths > 0 ? "+" + newDeaths.toLocaleString() : "-"}</div>
                                     <div style={styles.value}><b>{deaths.toLocaleString()}</b></div>
                                     <div><b>Mortes</b></div>
                                 </div>
 
                                 <div style={styles.values}>
-                                    <div style={{...styles.newValues, color: Number(deltaMortalRate.toFixed(2)) > 0.00 ? 'red' : Number(deltaMortalRate.toFixed(2)) < 0.00 ? 'green' : 'black'}}>{Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
+                                    <div style={{ ...styles.newValues, color: Number(deltaMortalRate.toFixed(2)) > 0.00 ? 'red' : Number(deltaMortalRate.toFixed(2)) < 0.00 ? 'green' : 'black' }}>{Number(deltaMortalRate.toFixed(2)) !== 0.00 ? (Number(deltaMortalRate.toFixed(2)) > 0.000 ? `+${deltaMortalRate.toFixed(2)}%` : `${deltaMortalRate.toFixed(2)}%`) : "-"}</div>
                                     <div style={styles.value}><b>{mortalRate.toFixed(2)}%</b></div>
                                     <div><b>Mortalidade</b></div>
                                 </div>
@@ -126,7 +111,7 @@ class Ranking extends React.Component {
                     })}
                 </div>}
 
-            </div>);
+            </Card>);
     }
 
 }
@@ -141,12 +126,54 @@ const styles = {
         alignItems: "center",
         justifyContent: "center",
         width: "30%",
-
     },
+
+    title: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 20,
+        backgroundColor: "red",
+        width: "100%",
+        marginBottom: 5
+    },
+
+    findContainer: {
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        width: "100%",
+        marginTop: 10,
+        marginBottom: 15
+    },
+
+    findInput: {
+        width: "100%",
+        height: 20,
+        borderColor: "red",
+        fontSize: 20,
+        border: "solid 1px red",
+        backgroundColor: "transparent",
+        color: "red",
+        padding: 10,
+    },
+
+    stateContainer: {
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        width: "99%",
+        height: 130,
+        borderBottom: 'solid 1px red',
+        borderTop: 'solid 1px red',
+        marginBottom: 10
+    },
+
     value: {
         fontSize: 23,
-
     },
+
     newValues: {
         textAlign: "center",
         width: "60%",

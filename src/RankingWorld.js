@@ -1,6 +1,8 @@
 import React from 'react';
 import { css } from "@emotion/core";
 import GridLoader from "react-spinners/GridLoader";
+import Card from './Components/Card';
+import {GiWorld} from 'react-icons/gi';
 import BarNavigatorWorld from './BarNavigatorWorld';
 
 
@@ -29,16 +31,16 @@ class RankingWorld extends React.Component {
 
     getType = () => {
         return {
-            0: "TotalConfirmed",
-            1: "TotalDeaths",
-            2: "TotalRecovered"
+            0: "totalCases",
+            1: "totalDeaths",
+            2: "totalRecovered"
         }
     }
 
 
     render() {
 
-        const { data } = this.props;
+        const { data, order } = this.props;
         const { filter, type } = this.state;
 
 
@@ -49,11 +51,7 @@ class RankingWorld extends React.Component {
 
         return (
 
-            <div style={{
-                display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%",
-                height: 600, order: this.props.order, fontFamily: "Oswald, sans-serif", border: "solid 2px red", padding: 10, marginBottom: 20
-            }}>
-
+           <Card height={600} order={order} title={'Mundo'} icon={<GiWorld size={20} />}>
 
                 {loading && <GridLoader
                     css={override}
@@ -63,10 +61,7 @@ class RankingWorld extends React.Component {
 
                 />}
 
-                {!loading && <div style={{
-                    display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                    fontSize: 20, backgroundColor: "red", width: "100%", marginBottom: 10
-                }}><b>Mundo</b></div>}
+           
 
 
                 {!loading && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 10, marginBottom: 10 }}>
@@ -81,13 +76,13 @@ class RankingWorld extends React.Component {
 
 
                 {!loading && <div style={{ height: "100%", width: "100%", overflow: "auto" }}>
-                    {data.filter(l => l.Country.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]]) - Number(a[this.getType()[type]])).map((d, i) => {
+                    {data.filter(l => l.name.toLowerCase().indexOf(filter.toLowerCase()) > -1).sort((a, b) => Number(b[this.getType()[type]]) - Number(a[this.getType()[type]])).map((d, i) => {
 
 
-                        const deaths = d.TotalDeaths;
-                        const cases = d.TotalConfirmed;
-                        const newCases = d.NewConfirmed;
-                        const newDeaths = d.NewDeaths;
+                        const deaths = d.totalDeaths;
+                        const cases = d.totalCases;
+                        const newCases = d.newCases;
+                        const newDeaths = d.newDeaths;
                         const mortalRate = cases > 0 ? ((deaths / cases) * 100).toFixed(2) : 0;
                         const mortalRateYesterday = ((deaths - newDeaths) / (cases - newCases)) * 100;
                         const deltaMortalRate = mortalRate - mortalRateYesterday;
@@ -132,7 +127,7 @@ class RankingWorld extends React.Component {
 
 
 
-            </div>);
+            </Card>);
     }
 
 }

@@ -37,8 +37,9 @@ class Footer extends React.Component {
               <span>Atualizado{" "}</span><Moment date={lastData} fromNow locale={"pt-br"} />
             </div>
 
-            <div style={{ marginBottom: 20 }}>
-              Desenvolvido por <a href="https://github.com/caiosbl" style={{ color: "red" }}>Caio Sanches</a> ©
+            <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", minWidth: 200, marginBottom: 20 }}>
+              <div>Desenvolvido por <a href="https://github.com/caiosbl" style={{ color: "red" }}>Caio Sanches</a> ©</div>
+              <div>Modelo Preditivo elaborado por <a href="https://github.com/joaohenriquedss" style={{ color: "red" }}>João Henrique</a> </div>
           </div>
 
            

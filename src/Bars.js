@@ -3,6 +3,9 @@ import { FaAmbulance, FaBriefcaseMedical, FaSkullCrossbones, FaPercent, FaPercen
 import Doughnut from './Charts/Doughnut'
 import Bar from './Bar/Bar';
 import BarRate from './BarRate';
+import Card from './Components/Card';
+import Insights from './Insights/Insights';
+
 
 
 
@@ -36,10 +39,11 @@ class Bars extends React.Component {
       fontFamily: 'Roboto, sans-serif', width: "100%", height: "100%", order: this.props.order, padding: 14, marginBottom: 20
     }}>
 
-     
-     <Doughnut total={totalCasesBrazil} recovered={totalRecoveredBrazil} deaths={totalDeathsBrazil} title={'Brasil'} />
-     <Doughnut total={totalCases} recovered={totalRecovered} deaths={totalDeaths} title={'Mundo'}/>
 
+      <Doughnut total={totalCasesBrazil} recovered={totalRecoveredBrazil} deaths={totalDeathsBrazil} title={'Brasil'} />
+      <Doughnut total={totalCases} recovered={totalRecovered} deaths={totalDeaths} title={'Mundo'} />
+    
+    <Insights />
 
 
 

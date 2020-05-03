@@ -8,13 +8,8 @@ import RankingWorld from './RankingWorld';
 import News from './News';
 import Footer from './Footer/Footer';
 import Header from './Header/Header';
-
-
-import { countriesEnglish } from './english';
 import { countriesPortuguese } from './portuguese';
-import { WorldApi, TimelineApi, CoronavairusApi } from './Services/Api';
-import { toNumber } from './Utils/Utils';
-import { time } from 'highcharts';
+import {CoronavairusApi } from './Services/Api';
 
 
 class App extends React.Component {
@@ -54,56 +49,37 @@ class App extends React.Component {
 
   getData = () => {
 
-
-    WorldApi.get("").then(res => {
-
-      const data = res.data['Countries'];
-
+    CoronavairusApi.get("/country").then(res => {
+      const data = res.data.content;
       let translated = [];
 
       data.forEach(country => {
 
-        const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.CountryCode)
+        const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.isoA2);
 
-
-        if (translateMap.length > 0) {
-          translated.push({ ...country, Country: translateMap[0]["name"] })
-        }
-        else {
-          translated.push(country)
-        }
-
+        if (translateMap.length > 0) 
+          translated.push({ ...country, Country: translateMap[0]["name"] });
+        else 
+          translated.push(country);
       });
 
-
-      const cases = data.map(state => [state.CountryCode, state.TotalConfirmed]);
-      const deaths = data.map(state => [state.CountryCode, state.TotalDeaths]);
-      const recovered = data.map(state => [state.CountryCode, state.TotalRecovered]);
-
-
+      const cases = data.map(state => [state.isoA2, state.totalCases]);
+      const deaths = data.map(state => [state.isoA2, state.totalDeaths]);
+      const recovered = data.map(state => [state.isoA2, state.totalRecovered]);
 
       this.setState({ world: { cases: cases, deaths: deaths, recovered: recovered, translated: translated } })
-
-
-
 
     }).catch(e => console.log(e))
 
     CoronavairusApi.get("/prediction/last").then(res => {
 
-      const formatDate = (date) => {
-        return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}`
-      }
-
+      const formatDate = (date) => { return `${date.split("-")[2].split("T")[0]}/${date.split("-")[1]}`};
+      
       const data = res.data.content;
       const prediction = data.map(prediction => {return {x: formatDate(prediction.date), y: prediction.cases.casesHighPrediction}});
       const predictionDeaths = data.map(prediction => {return {x: formatDate(prediction.date), y: prediction.deaths.deathsHighPrediction}});
 
-
- 
-
       this.setState({ timeline: {...this.state.timeline, prediction: prediction, predictionDeaths:  predictionDeaths} });
-
 
     }).catch(e => console.log(e))
 
@@ -111,9 +87,7 @@ class App extends React.Component {
     CoronavairusApi.get("/brazil/last").then(res => {
 
       let data = res.data.content;
-
       this.setState({ brazilStatus: data });
-
 
     }).catch(e => console.log(e))
 
@@ -122,9 +96,7 @@ class App extends React.Component {
       let data = res.data.content;
       this.setState({ global: data });
 
-
     }).catch(e => console.log(e))
-
 
 
     CoronavairusApi.get("/state").then(res => {
@@ -132,17 +104,12 @@ class App extends React.Component {
       const data = res.data.content;
       const cases = data.map(state => [`br-${String(state.uf).toLowerCase()}`, state.latest.cases]);
       const deaths = data.map(state => [`br-${String(state.uf).toLowerCase()}`, state.latest.deaths]);
-      const mortalRate = data.map(state => {
-
-
-        return [`br-${String(state.uf).toLowerCase()}`, ((state.latest.deaths / state.latest.cases) * 100)]
-      });
+      const mortalRate = data.map(state => { return [`br-${String(state.uf).toLowerCase()}`, ((state.latest.deaths / state.latest.cases) * 100)] });
 
       const suspects = data.map(state => {
         const suspect = state.latest.suspects || 0;
         return [`br-${String(state.uf).toLowerCase()}`, suspect]
       });
-
 
 
       this.setState({
@@ -167,27 +134,17 @@ class App extends React.Component {
       if (timeline.slice(-2)[0].totalCases === timeline.slice(-1)[0].totalCases)
         timeline = timeline.slice(0, timeline.length - 1);
 
-
       const dates = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}`);
       const cases = timeline.map(d => d.totalCases);
       const deaths = timeline.map(d => d.totalDeaths);
       let casesByDay = timeline.map(d => d.newCases);;
       let deathsByDay = timeline.map(d => d.newDeaths);;
 
-
-
-
       this.setState({ timeline: {...this.state.timeline, dates: dates, cases: cases, deaths: deaths, casesByDay: casesByDay, deathsByDay: deathsByDay,  } });
-
 
     }).catch(e => console.log(e))
 
-
-
-
-  }
-
-
+}
 
   render() {
 
