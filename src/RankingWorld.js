@@ -3,8 +3,8 @@ import { css } from "@emotion/core";
 import GridLoader from "react-spinners/GridLoader";
 import Card from './Components/Card';
 import {GiWorld} from 'react-icons/gi';
-import BarNavigatorWorld from './BarNavigatorWorld';
-
+import { countriesPortuguese } from './portuguese';
+import { CoronavairusApi } from './Services/Api';
 
 const override = css`
   display: block;
@@ -29,6 +29,30 @@ class RankingWorld extends React.Component {
 
     }
 
+    componentDidMount() {
+        this.getData();
+    }
+
+    getData = () => {
+        CoronavairusApi.get("/country").then(res => {
+            const data = res.data;
+            let translated = [];
+      
+            data.forEach(country => {
+      
+              const translateMap = Object.values(countriesPortuguese).filter(v => v.alpha2.toUpperCase() === country.isoA2);
+      
+              if (translateMap.length > 0)
+                translated.push({ ...country, Country: translateMap[0]["name"] });
+              else
+                translated.push(country);
+            });
+      
+            this.setState({ data: translated } )
+      
+          }).catch(e => console.log(e))
+    }
+
     getType = () => {
         return {
             0: "totalCases",
@@ -40,8 +64,8 @@ class RankingWorld extends React.Component {
 
     render() {
 
-        const { data, order } = this.props;
-        const { filter, type } = this.state;
+        const {  order } = this.props;
+        const { filter, type, data } = this.state;
 
 
         const loading = data.length === 0;
@@ -51,20 +75,10 @@ class RankingWorld extends React.Component {
 
         return (
 
-           <Card height={600} order={order} title={'Mundo'} icon={<GiWorld size={20} />}>
+           <Card height={600} order={order} title={'Mundo'} icon={<GiWorld size={20} />} loading={loading}>
 
-                {loading && <GridLoader
-                    css={override}
-                    size={20}
-                    color={"red"}
-                    loading={loading}
-
-                />}
-
-           
-
-
-                {!loading && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 10, marginBottom: 10 }}>
+            
+                {!loading && <div style={{ display: "flex", alignItems: "center", justifyContent: "center", width: "100%", marginTop: 20, marginBottom: 20 }}>
 
                     <input type="text" value={filter} style={{
                         width: "100%", height: 20, borderColor: "red", fontSize: 20,

@@ -28,5 +28,6 @@ export const GeoJsonWorld = Axios.create({
 
 export const CoronavairusApi = Axios.create({
   baseURL: `https://api.coronavairus.com.br/`,
+  //baseURL: `http://10.0.0.121:8089/`,
 });
 

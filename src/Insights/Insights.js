@@ -22,7 +22,7 @@ class Insights extends React.Component {
     componentDidMount() {
         CoronavairusApi.get("/insight/last").then(res => {
 
-            const { brazilDoubleCasesDays, greatestCasesOcurrenceIncrease, greatestDeathOcurrenceIncrease, greatestMortalityIncrease, lowestMortalityIncrease } = res.data.content;
+            const { brazilDoubleCasesDays, greatestCasesOcurrenceIncrease, greatestDeathOcurrenceIncrease, greatestMortalityIncrease, lowestMortalityIncrease } = res.data;
 
             this.setState({
                 brazilDoubleCasesDays: brazilDoubleCasesDays,
@@ -36,19 +36,23 @@ class Insights extends React.Component {
         }).catch(e => console.log(e))
     }
 
-    
+
     render() {
 
         const { brazilDoubleCasesDays, greatestCasesIncrease, greatestDeathsIncrease, greatestMortalityIncrease, lowestMortalityIncrease, loading } = this.state;
+        const { order } = this.props;
 
         return (
-            <Card height={800} title={'Insights'} >
+            <Card height={620} title={'Insights'} loading={loading} order={order}>
 
-                {!loading && <InsightItem data={brazilDoubleCasesDays} doubleCases />}
-                {!loading && <InsightItem data={greatestCasesIncrease} metric={'casos'} />}
-                {!loading && <InsightItem data={greatestDeathsIncrease} metric={'mortes'} />}
-                {!loading && <InsightItem data={greatestMortalityIncrease} metric={'mortalidade'} />}
-                {!loading && <InsightItem data={lowestMortalityIncrease} metric={'mortalidade'} decrease />}
+                <div style={{width: '100%', height: '100%', overflow: 'auto'}}>
+                    {!loading && <InsightItem data={brazilDoubleCasesDays} doubleCases />}
+                    {!loading && <InsightItem data={greatestCasesIncrease} metric={'casos'} />}
+                    {!loading && <InsightItem data={greatestDeathsIncrease} metric={'mortes'} />}
+                    {!loading && <InsightItem data={greatestMortalityIncrease} metric={'mortalidade'} />}
+                    {!loading && <InsightItem data={lowestMortalityIncrease} metric={'mortalidade'} decrease />}
+                </div>
+
 
 
             </Card>);

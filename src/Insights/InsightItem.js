@@ -19,7 +19,7 @@ class Insights extends React.Component {
 
                 <div style={styles.boxStyle}>
                     <div>
-                        O número de <span style={{ fontSize: '1.2em', color: 'red' }}>casos</span> confirmados por dia no Brasil está <span style={{ fontSize: '1.3em', color: 'red' }}>dobrando</span> em <span style={{ fontSize: '1.3em', color: 'red' }}>{data} dias</span>.
+                        O número de <span style={{ fontSize: '1.2em', color: 'red' }}>casos</span> confirmados no Brasil está <span style={{ fontSize: '1.1em', color: 'red' }}>dobrando</span> em <span style={{ fontSize: '1.2em', color: 'red' }}>{data} dias</span>.
                 </div>
                 </div>
 
@@ -28,8 +28,7 @@ class Insights extends React.Component {
                     <div>
                         <span style={{ fontSize: '1.3em', color: 'red' }}>{data.stateName} </span>
                         teve {decrease ? 'uma queda' : 'um aumento'} de <span style={{ fontSize: '1.2em', color: 'red' }}>{Math.abs(data.increaseRate).toFixed(2)}%</span>
-                    </div>
-                    <div>na <span style={{ color: 'red' }}>{mortality ? 'taxa' : 'ocorrência'} de {metric}</span> de Covid-19 nos últimos 7 dias, {decrease ? 'a' : 'o'} maior do Brasil no período.</div>
+              <span style={{ color: 'red' }}>{mortality ? ' na taxa' : ' na ocorrência'} de {metric}</span> de Covid-19 nos últimos 7 dias, {decrease ? 'a' : 'o'} maior do Brasil no período.</div>
                 </div>);
 
 
@@ -46,12 +45,13 @@ const styles = {
         alignItems: 'flex-start',
         justifyContent: 'center',
         textAlign: 'left',
-        border: 'solid 1px red',
-        width: '90%',
+        borderTop: 'solid 1px red',
+        borderBottom: 'solid 1px red',
+        width: '93%',
         height: 100,
         padding: 10,
         minHeight: 100,
-        marginTop: 15
+        marginTop: 20
     }
 
 }

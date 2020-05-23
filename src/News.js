@@ -92,20 +92,20 @@ class News extends React.Component {
 
                 {!loading && <div style={{
                     display: "flex", flexDirection: "row", alignItems: "center", fontFamily: "Oswald, sans-serif",
-                    justifyContent: "space-between", width: "100%", height: 40, border: "solid 1px red"
+                    justifyContent: "space-between", width: "100%", height: 40, border: "solid 1px red", borderRadius: 5
                 }}>
 
 
                     <div style={{
                         display: "flex", flexDirection: "column", alignItems: "center", width: 200,
-                        justifyContent: "center", height: 40, backgroundColor: "red",
+                        justifyContent: "center", height: 40, backgroundColor: "red",borderTopLeftRadius: 5,borderBottomLeftRadius:5
                     }}>Últimas Notícias</div>
 
 
                     <div ref={"scroller"}
                         style={{
                             display: "flex", flexDirection: "row", justifyContent: "space-between",
-                            width: "80%", height: 40, overflow: "hidden"
+                            width: "100%", height: 40, overflow: "hidden"
                         }}>
 
 

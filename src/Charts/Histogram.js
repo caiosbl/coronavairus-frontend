@@ -4,6 +4,8 @@ import HighchartsReact from 'highcharts-react-official'
 import { css } from "@emotion/core";
 import GridLoader from "react-spinners/GridLoader";
 import BarNavigatorHistogram from './../BarNavigatorHistogram';
+import Card from '../Components/Card';
+import { CoronavairusApi } from '../Services/Api';
 
 const override = css`
   display: block;
@@ -17,19 +19,41 @@ class Histogram extends React.Component {
     super(props);
     this.state = {
       activeData: 0,
-      actualData: []
+      dates: [],
+      cases: [],
+      deaths: [],
+      casesByDay: [],
+      deathsByDay: []
+     
     }
 
   }
 
 
-  componentWillReceiveProps(nextProps, nextContent) {
-    if (this.state.actualData.length === 0) this.setState({ actualData: nextProps.casesByDay })
+ 
+
+  componentDidMount() {
+    CoronavairusApi.get("/brazil").then(res => {
+
+      let timeline = res.data;
+      if (timeline.slice(-2)[0].totalCases === timeline.slice(-1)[0].totalCases)
+        timeline = timeline.slice(0, timeline.length - 1);
+
+      const dates = timeline.map(d => `${d.date.split("-")[2].split("T")[0]}/${d.date.split("-")[1]}`);
+      const cases = timeline.map(d => d.totalCases);
+      const deaths = timeline.map(d => d.totalDeaths);
+      let casesByDay = timeline.map(d => d.newCases);;
+      let deathsByDay = timeline.map(d => d.newDeaths);;
+
+      this.setState({ dates, cases,  deaths, casesByDay, deathsByDay });
+
+    }).catch(e => console.log(e))
   }
 
 
   histogramOptions = () => {
     const { activeData } = this.state;
+    const {dates, cases, deaths, casesByDay, deathsByDay} = this.state;
 
     return ({
       chart: { backgroundColor: "#000000", lineColor: "red", style: { color: "red" } },
@@ -55,7 +79,7 @@ class Histogram extends React.Component {
 
       },
       xAxis: {
-        categories: this.props.dates,
+        categories: dates,
         tickColor: "red",
         lineColor: '#FF0000',
         lineWidth: 1,
@@ -89,7 +113,7 @@ class Histogram extends React.Component {
 
       series: [{
         name: activeData === 0 ? "Casos confirmados" : "Mortes confirmadas",
-        data: [...this.state.actualData],
+        data: [...this.getMapData()],
         lineColor: "red", marker: { fillColor: "red" },
         type: "column"
       }],
@@ -99,8 +123,9 @@ class Histogram extends React.Component {
     })
   }
 
-  getData = (index) => {
-    const { casesByDay, deathsByDay } = this.props;
+  getMapData = () => {
+    const { casesByDay, deathsByDay, activeData } = this.state;
+    const index = activeData;
 
     return {
       0: casesByDay,
@@ -119,26 +144,21 @@ class Histogram extends React.Component {
 
   render() {
 
-    const { activeData, actualData } = this.state;
-    const loading = actualData.length === 0;
+    const { activeData, cases } = this.state;
+    const {order} = this.props;
+    const loading = cases.length === 0;
 
 
     return (
 
-      <div style={{ ...styles.container, order: this.props.order }}>
+      <Card order={order} minHeight={300} loading={loading}>
 
         {!loading &&
           <BarNavigatorHistogram active={activeData}
-           setActive={(active) => this.setState({ activeData: active, actualData: this.getData(active) })}
+            setActive={(active) => this.setState({ activeData: active, actualData: this.getMapData(active) })}
             options={["Casos por Dia", "Mortes por Dia"]} />}
 
-        {loading ? <GridLoader
-          css={override}
-          size={20}
-          color={"red"}
-          loading={loading}
-
-        /> :
+        {!loading &&
           <HighchartsReact
             constructorType={'chart'}
             highcharts={Highcharts}
@@ -146,7 +166,7 @@ class Histogram extends React.Component {
             containerProps={styles.containerChart}
           />}
 
-      </div>);
+      </Card>);
 
   }
 }

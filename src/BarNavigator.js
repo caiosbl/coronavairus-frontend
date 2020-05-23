@@ -11,7 +11,7 @@ class BarNavigator extends React.Component {
 
     render() {
 
-        const { active, setActive, options, hidden } = this.props;
+        const { active, setActive, options, hidden , brazil} = this.props;
 
 
 
@@ -19,12 +19,14 @@ class BarNavigator extends React.Component {
 
 
             <div style={{
-                display: 'flex', flexDirection: "row", alignItems: "center", justifyContent: "center", width: '100%', height: 60,
+                display: 'flex', alignItems: "center", justifyContent: "center", width: '100%', height: 60,
                 fontFamily: "Roboto, sans-serif",
             }}>
                 <div style={active === 0 ? styles.active : styles.inactive} onClick={() => setActive(0)}>{ options && options[0] || "Casos"}</div>
                 <div style={active === 1 ? styles.active : styles.inactive} onClick={() => setActive(1)}>{ options && options[1] || "Mortes"}</div>
                 {!hidden && <div style={active === 2 ? styles.active : styles.inactive} onClick={() => setActive(2)}>{ options && options[2] || "Mortalidade"}</div>}
+                {!hidden && brazil && <div style={active === 3 ? styles.active : styles.inactive} onClick={() => setActive(3)}>{ options && options[3] || "Testes"}</div>}
+
 
 
 

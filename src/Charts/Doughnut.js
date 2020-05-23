@@ -6,6 +6,7 @@ import GridLoader from "react-spinners/GridLoader";
 import BarNavigatorHistogram from './../BarNavigatorHistogram';
 import { Doughnut as DoughnutChart } from 'react-chartjs-2';
 import ScaleLoader from "react-spinners/ScaleLoader";
+import Card from '../Components/Card';
 
 const override = css`
   display: block;
@@ -22,6 +23,16 @@ const options = {
     legend: {
         display: false,
         position: "bottom",
+    },
+    tooltips: {
+        callbacks: {
+            label: function(tooltipItem, chart){
+              
+                const datasetLabel = chart.labels[tooltipItem.index] || '';
+                const value = chart.datasets[0].data[tooltipItem.index] || '';
+                return datasetLabel + ': ' + value.toLocaleString();
+            }
+        }
     }
 }
 
@@ -76,22 +87,9 @@ class Doughnut extends React.Component {
 
         return (
 
-            <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', width: '100%',
-             minHeight: 200, padding: 20, marginBottom: 20, borderBottom: 'solid 1px red' }}>
+            <Card title={title} height={'100%'} loading={loading}>
 
-
-                {loading && <ScaleLoader
-                    css={override}
-                    size={20}
-                    color={"red"}
-                    loading={loading}
-                />}
-
-
-                {!loading && <div style={{marginBottom: 20, fontFamily: "Oswald, sans-serif", fontSize: 30}}>{title}</div>}
-
-
-                    {!loading && <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: '150%', }}>
+                    {!loading && <div style={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: '150%', marginTop: 20 }}>
 
                     <DoughnutChart ref={this.chartReference} data={this.data()} options={options} />
 
@@ -124,7 +122,7 @@ class Doughnut extends React.Component {
 
                 </div>}
 
-            </div>
+                </Card>
         );
 
     }
