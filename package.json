@@ -21,7 +21,7 @@
     "i": "^0.3.6",
     "jsdom": "^16.2.2",
     "loadash": "^1.0.0",
-    "lodash": "^4.17.15",
+    "lodash": "^4.17.19",
     "lzwcompress": "^0.5.14",
     "ml-regression": "^5.0.0",
     "ml-regression-simple-linear": "^2.0.2",
