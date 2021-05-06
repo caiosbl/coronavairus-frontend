@@ -15,7 +15,7 @@
     "axios": "^0.19.2",
     "chart.js": "^2.9.3",
     "get-script-tag-vars": "^1.1.2",
-    "highcharts": "^8.1.1",
+    "highcharts": "^9.0.0",
     "highcharts-react-official": "^3.0.0",
     "html-extractor": "^0.2.2",
     "i": "^0.3.6",
